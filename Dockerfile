@@ -27,7 +27,7 @@ RUN pip install python-igraph && \
     # put theano compiledir inside /tmp (it needs to be in writable dir)
     printf "[global]\nbase_compiledir = /tmp/.theano\n" > /.theanorc && \
     cd /usr/local/src &&  git clone https://github.com/pybrain/pybrain && \
-    cd pybrain && python setup.py install
+    cd pybrain && python setup.py install && \
     # Base ATLAS plus tSNE
     apt-get install -y libatlas-base-dev && \
     # NOTE: we provide the tsne package, but sklearn.manifold.TSNE now does the same
