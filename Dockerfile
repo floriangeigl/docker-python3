@@ -1,6 +1,23 @@
 FROM kaggle/python1:latest
 
-RUN # Dev branch of Theano
+RUN #lasagne
+    cd /usr/local/src && mkdir Lasagne && cd Lasagne && \
+    git clone https://github.com/Lasagne/Lasagne.git && cd Lasagne && \
+    pip install -r requirements.txt && python setup.py install && \
+    #keras
+    cd /usr/local/src && mkdir keras && cd keras && \
+    git clone https://github.com/fchollet/keras.git && \
+    cd keras && python setup.py install && \
+    #neon
+    cd /usr/local/src && \
+    git clone https://github.com/NervanaSystems/neon.git && \
+    cd neon && pip install -e . && \
+    #nolearn
+    cd /usr/local/src && mkdir nolearn && cd nolearn && \
+    git clone https://github.com/dnouri/nolearn.git && cd nolearn && \
+    echo "x" > README.rst && echo "x" > CHANGES.rst && \
+    python setup.py install && \
+    # Dev branch of Theano
     pip install git+git://github.com/Theano/Theano.git --upgrade --no-deps && \
     # put theano compiledir inside /tmp (it needs to be in writable dir)
     printf "[global]\nbase_compiledir = /tmp/.theano\n" > /.theanorc && \
