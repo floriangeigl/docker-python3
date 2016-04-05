@@ -1,6 +1,12 @@
 FROM kaggle/python1:latest
 
-RUN #lasagne
+RUN #igraph
+    pip install python-igraph && \
+    #xgboost
+    cd /usr/local/src && mkdir xgboost && cd xgboost && \
+    git clone --recursive https://github.com/dmlc/xgboost.git && cd xgboost && \
+    make && cd python-package && python setup.py install
+    #lasagne
     cd /usr/local/src && mkdir Lasagne && cd Lasagne && \
     git clone https://github.com/Lasagne/Lasagne.git && cd Lasagne && \
     pip install -r requirements.txt && python setup.py install && \
