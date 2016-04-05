@@ -1,7 +1,6 @@
 FROM kaggle/python1:latest
 
-RUN #igraph
-    pip install python-igraph && \
+RUN pip install python-igraph && \
     #xgboost
     cd /usr/local/src && mkdir xgboost && cd xgboost && \
     git clone --recursive https://github.com/dmlc/xgboost.git && cd xgboost && \
