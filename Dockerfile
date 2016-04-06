@@ -1,5 +1,12 @@
 FROM kaggle/python2:latest
 
+    # Install OpenCV-3 with Python support
+RUN cd /usr/local/src/opencv && \
+    mkdir build && cd build && \
+    cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D WITH_FFMPEG=OFF -D WITH_V4L=ON -D WITH_QT=OFF -D WITH_OPENGL=ON -D PYTHON3_LIBRARY=/opt/conda/lib/libpython3.5m.so -D PYTHON3_INCLUDE_DIR=/opt/conda/include/python3.5m/ -D PYTHON_LIBRARY=/opt/conda/lib/libpython3.5m.so -D PYTHON_INCLUDE_DIR=/opt/conda/include/python3.5m/ .. && \
+    make -j $(nproc) && make install && \
+    echo "/usr/local/lib/python3.5/site-packages" > /etc/ld.so.conf.d/opencv.conf && ldconfig
+
 RUN apt-get -y install libgeos-dev && \
     # pyshp and pyproj are now external dependencies of Basemap
     pip install pyshp pyproj && \
