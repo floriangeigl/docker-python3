@@ -1,7 +1,8 @@
 FROM kaggle/python2:latest
 
     # Install OpenCV-3 with Python support
-RUN cd /usr/local/src/opencv && \
+RUN apt-get update && \
+    cd /usr/local/src/opencv && \
     mkdir build && cd build && \
     cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D WITH_FFMPEG=OFF -D WITH_V4L=ON -D WITH_QT=OFF -D WITH_OPENGL=ON -D PYTHON3_LIBRARY=/opt/conda/lib/libpython3.5m.so -D PYTHON3_INCLUDE_DIR=/opt/conda/include/python3.5m/ -D PYTHON_LIBRARY=/opt/conda/lib/libpython3.5m.so -D PYTHON_INCLUDE_DIR=/opt/conda/include/python3.5m/ -D BUILD_PNG=TRUE .. && \
     make -j $(nproc) && make install && \
@@ -49,10 +50,13 @@ RUN mkdir -p /root/.jupyter && touch /root/.jupyter/jupyter_nbconvert_config.py 
     mkdir -p /etc/ipython/ && echo "c = get_config(); c.IPKernelApp.matplotlib = 'inline'" > /etc/ipython/ipython_config.py
 
     # h2o
-    # (This requires python-software-properties; see the MXNet section above for installation.)
-    # Java7 install method from http://www.webupd8.org/2012/06/how-to-install-oracle-java-7-in-debian.html
-    # and https://stackoverflow.com/a/19391042
-RUN apt-get install -y oracle-java7-installer && \
+    # This requires python-software-properties and Java.
+RUN apt-get install -y python-software-properties zip && \
+    echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list &&     echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list &&     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 C857C906 2B90D010 && \
+    apt-get update && \
+    echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
+    echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections && \
+    apt-get install -y oracle-java8-installer && \
     cd /usr/local/src && mkdir h2o && cd h2o && \
     wget http://h2o-release.s3.amazonaws.com/h2o/latest_stable -O latest && \
     wget --no-check-certificate -i latest -O h2o.zip && rm latest && \
