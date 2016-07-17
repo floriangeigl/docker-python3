@@ -32,8 +32,7 @@ RUN apt-get -y install libgeos-dev && \
 
     # MXNet
 RUN cd /usr/local/src && git clone --recursive https://github.com/dmlc/mxnet && \
-    cd /usr/local/src/mxnet && cp make/config.mk . && sed -i 's/CC = gcc/CC = gcc-4.8/' config.mk && \
-    sed -i 's/CXX = g++/CXX = g++-4.8/' config.mk && \
+    cd /usr/local/src/mxnet && cp make/config.mk . && \
     sed -i 's/ADD_LDFLAGS =/ADD_LDFLAGS = -lstdc++/' config.mk && \
     make && cd python && python setup.py install
     
