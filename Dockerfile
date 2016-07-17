@@ -69,9 +69,9 @@ RUN apt-get install -y python-software-properties zip && \
     # have it done now
 RUN python -c "from keras.models import Sequential"  && \
     # Switch to TF backend
-    sed -i 's/theano/tensorflow/' /.keras/keras.json  && \
+    sed -i 's/theano/tensorflow/' /root/.keras/keras.json  && \
     # Re-run it to flush any more disk writes
     python -c "from keras.models import Sequential; from keras import backend; print(backend._BACKEND)" && \
     # Keras reverts to /tmp from ~ when it detects a read-only file system
-    mkdir -p /tmp/.keras && cp /.keras/keras.json /tmp/.keras
+    mkdir -p /tmp/.keras && cp /root/.keras/keras.json /tmp/.keras
 
