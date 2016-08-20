@@ -7,7 +7,10 @@ RUN apt-get update && \
     cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D WITH_TBB=ON -D WITH_FFMPEG=OFF -D WITH_V4L=ON -D WITH_QT=OFF -D WITH_OPENGL=ON -D PYTHON3_LIBRARY=/opt/conda/lib/libpython3.5m.so -D PYTHON3_INCLUDE_DIR=/opt/conda/include/python3.5m/ -D PYTHON_LIBRARY=/opt/conda/lib/libpython3.5m.so -D PYTHON_INCLUDE_DIR=/opt/conda/include/python3.5m/ -D BUILD_PNG=TRUE .. && \
     make -j $(nproc) && make install && \
     echo "/usr/local/lib/python3.5/site-packages" > /etc/ld.so.conf.d/opencv.conf && ldconfig && \
-    cp /usr/local/lib/python3.5/site-packages/cv2.cpython-35m-x86_64-linux-gnu.so /opt/conda/lib/python3.5/site-packages/
+    cp /usr/local/lib/python3.5/site-packages/cv2.cpython-35m-x86_64-linux-gnu.so /opt/conda/lib/python3.5/site-packages/ && \
+    # does only reduce the image size if the installation of opencv is merged into the last layer of the previous docker file (docker-python3)
+    rm -rf /usr/local/src/opencv && \
+    apt-get autoremove -y && apt-get clean
 
 RUN apt-get -y install libgeos-dev && \
     # pyshp and pyproj are now external dependencies of Basemap
@@ -29,13 +32,18 @@ RUN apt-get -y install libgeos-dev && \
     cd /usr/local/src && git clone https://github.com/Toblerity/Shapely.git && \
     cd Shapely && python setup.py install && \
     cd /usr/local/src && git clone https://github.com/SciTools/cartopy.git && \
-    cd cartopy && python setup.py install
+    cd cartopy && python setup.py install && \
+    rm -rf /usr/local/src/* && \
+    apt-get autoremove -y && apt-get clean && \
+    conda clean -i -l -t -y && \
+    rm -rf /root/.cache/pip/*
 
     # MXNet
 RUN cd /usr/local/src && git clone --recursive https://github.com/dmlc/mxnet && \
     cd /usr/local/src/mxnet && cp make/config.mk . && \
     sed -i 's/ADD_LDFLAGS =/ADD_LDFLAGS = -lstdc++/' config.mk && \
-    make && cd python && python setup.py install
+    make && cd python && python setup.py install && \
+    rm -rf /usr/local/src/*
     
     # set backend for matplotlib to Agg
 RUN matplotlibrc_path=$(python -c "import site, os, fileinput; packages_dir = site.getsitepackages()[0]; print(os.path.join(packages_dir, 'matplotlib', 'mpl-data', 'matplotlibrc'))") && \
@@ -61,7 +69,10 @@ RUN apt-get install -y python-software-properties zip && \
     wget http://h2o-release.s3.amazonaws.com/h2o/latest_stable -O latest && \
     wget --no-check-certificate -i latest -O h2o.zip && rm latest && \
     unzip h2o.zip && rm h2o.zip && cp h2o-*/h2o.jar . && \
-    pip install `find . -name "*whl"`
+    pip install `find . -name "*whl"` && \
+    rm -rf /usr/local/src/* && \
+    apt-get autoremove -y && apt-get clean && \
+    rm -rf /root/.cache/pip/*
 
     # Keras setup
     # Keras likes to add a config file in a custom directory when it's
