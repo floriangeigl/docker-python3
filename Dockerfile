@@ -1,6 +1,6 @@
 FROM kaggle/python2:latest
 
-RUN apt-get -y install libgeos-dev && \
+RUN apt-get update && apt-get -y install libgeos-dev && \
     # pyshp and pyproj are now external dependencies of Basemap
     pip install pyshp pyproj && \
     cd /usr/local/src && git clone https://github.com/matplotlib/basemap.git && \
@@ -47,7 +47,7 @@ RUN mkdir -p /root/.jupyter && touch /root/.jupyter/jupyter_nbconvert_config.py 
 
     # h2o
     # This requires python-software-properties and Java.
-RUN apt-get install -y python-software-properties zip && \
+RUN apt-get update && apt-get install -y python-software-properties zip && \
     echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list &&     echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu precise main" | tee -a /etc/apt/sources.list &&     apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886 C857C906 2B90D010 && \
     apt-get update && \
     echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections && \
